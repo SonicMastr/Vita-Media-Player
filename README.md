@@ -18,4 +18,4 @@ SceAvPlayer does not support 1080p video playback by default. You need to patch 
 
 ## Special Thanks
 
-#### 1080p Video Playback was made possible by GrapheneCt and his Reverse Engineering efforts into SceAvPlayer<br><br>Cuevavirus for Sharpscale providing 1080i support<br><br>SomeonPC for Livearea Assets<br><br>And Usagi for constantly getting on my ass to get this to work.
+#### 1080p Video Playback was made possible by GrapheneCt and his Reverse Engineering efforts into SceAvPlayer<br><br>Cuevavirus for Sharpscale providing 1080i support<br><br>Joel16 for the original ElevenMPV file browser used as a base (I can't do UI)<br><br>SomeonPC for Livearea Assets<br><br>And Usagi for constantly getting on my ass to get this to work.
