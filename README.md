@@ -15,7 +15,4 @@ MKVs do NOT work. If you want to preserve subtitles with MKVs I recommend using 
 
 ## Special Thanks
 
-- 1080p Video Playback was made possible by GrapheneCt and his Reverse Engineering efforts into SceAvPlayer
-- Cuevavirus for Sharpscale providing 1080i support
-- SomeonPC for Livearea Assets
-- And Usagi for constantly getting on my ass to get this to work.
+#### 1080p Video Playback was made possible by GrapheneCt and his Reverse Engineering efforts into SceAvPlayer<br><br>Cuevavirus for Sharpscale providing 1080i support<br><br>SomeonPC for Livearea Assets<br><br>And Usagi for constantly getting on my ass to get this to work.
