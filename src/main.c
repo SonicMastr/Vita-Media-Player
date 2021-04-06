@@ -24,6 +24,7 @@ int initVita2d()
 int main()
 {
     sceIoMkdir("ux0:data/SubPlayer", 0777);
+    vita2d_display_set_max_resolution(FRAMEBUF_WIDTH, FRAMEBUF_HEIGHT);
     vita2d_display_set_resolution(FRAMEBUF_WIDTH, FRAMEBUF_HEIGHT);
     initVita2d();
     initAppUtil();
