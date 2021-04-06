@@ -294,6 +294,7 @@ int startPlayback(char *filename)
 	timerUid = sceKernelCreateTimer("OverlayTimer", 0, NULL);
 	AVPlayerThreadId = sceKernelCreateThread("loadAVPlpayer", loadAVPlayerThread, 0x10000100, 0x4000, 0, 0, NULL);
 	sceKernelStartThread(AVPlayerThreadId, 0, NULL);
+	frameTexture = malloc(sizeof(*frameTexture));
 	while (playerStatus == PLAYER_LOADING) {
 		sceDisplayWaitVblankStart();
 		drawLoading();
@@ -303,7 +304,6 @@ int startPlayback(char *filename)
         printf("Whoops\n");
     }
     else if (playerStatus == PLAYER_READY){
-		frameTexture = malloc(sizeof(*frameTexture));
     	sceAvPlayerSetLooping(player, SCE_FALSE);
 		audioThreadId = sceKernelCreateThread("AudioOutput", audioOutThread, 0x10000100, 0x4000, 0, 0, NULL);
     	sceKernelStartThread(audioThreadId, 0, NULL);
