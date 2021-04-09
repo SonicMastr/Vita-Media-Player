@@ -54,6 +54,11 @@ typedef enum SubtitlesStatus {
     SUBTITLES_NONE
 } SubtitlesStatus;
 
+typedef enum SubtitlesType {
+    SUBTITLES_TIMED_TEXT,
+    SUBTITLES_SRT
+} SubtitlesType;
+
 extern vita2d_pvf *subtitleFont;
 extern SceUInt32 SCE_CTRL_ENTER;
 extern SceUInt32 SCE_CTRL_CANCEL;
@@ -69,5 +74,6 @@ extern PlayerState playerState;
 extern ThumbnailStatus thumbnailStatus;
 extern uint64_t streamDuration;
 extern SubtitlesStatus subStatus;
+extern SubtitlesType subType;
 
 #endif

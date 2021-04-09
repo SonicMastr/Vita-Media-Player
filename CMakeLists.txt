@@ -62,6 +62,7 @@ add_executable(${PROJECT_NAME}
   src/commonValues.c
   src/menus/menuMain.c
   src/menus/menuInfo.c
+  src/avplayer/avsubs.c
   src/avplayer/avplayer.c
   src/avplayer/avsound.c
   src/avplayer/avplayerUtils.c
@@ -69,43 +70,20 @@ add_executable(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-  vita2d_sys
+  vita2d_sys_stub
   SceKernel_stub
-  SceAppMgr_stub
   SceAvcodec_stub
   SceVideodec_stub
   SceAppUtil_stub
   SceAvPlayer_stub
   SceAudio_stub
   SceCtrl_stub
-  ScePng
-  SceDeflt
-  SceSysmem_stub
   SceDisplay_stub
-  SceDisplayUser_stub
   SceSysmodule_stub
   SceIofilemgr_stub
-  SceAppMgrUser_stub
-  SceShellSvc_stub
   SceGxm_stub
-  SceGxmInternal_stub
-  SceGxmInternalForVsh_stub
-  SceGxmInternalForTest_stub
-  SceGpuEs4User_stub
-  SceGpuEs4UserForVsh_stub
-  SceCommonDialog_stub
-  SceDbg_stub
-  SceFios2_stub
-  SceJpegUser_stub
-  SceJpegArm_stub
-  ScePgf_stub
-  ScePvf_stub
-  SceRtabi_stub
-  SceSharedFb_stub
   SceThreadmgr_stub
   SceModulemgr_stub
-  SceProcessmgr_stub
-  SceDmacmgr_stub
 )
 
 VDSuiteCreateSfo(vmp-param.sfo param.yml)

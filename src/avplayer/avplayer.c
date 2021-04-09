@@ -1,5 +1,6 @@
 #include "avplayer.h"
 #include "avsound.h"
+#include "avsubs.h"
 #include "common.h"
 #include "texture.h"
 #include "overlay.h"
@@ -30,6 +31,8 @@ SceUID timerUid;
 SceKernelSysClock timerBaseClock;
 SceKernelSysClock *timerCurrentClock = NULL;
 SceUID callback;
+static SceBool subReset = 0;
+uint64_t playerTime = 0;
 
 SceBool ran;
 
@@ -69,10 +72,12 @@ static void handleAVPlayerControls()
 		else
 		    jumpTime -= jumpToTimeOffset;
 		sceAvPlayerJumpToTime(player, jumpTime);
+		subReset = 1;
 	}
     if (pressed & SCE_CTRL_RIGHT) {
 		int64_t jumpTime = sceAvPlayerCurrentTime(player);
 		sceAvPlayerJumpToTime(player, jumpTime+jumpToTimeOffset);
+		subReset = 1;
 	}
 }
 
@@ -128,13 +133,15 @@ void eventCallback(void* jumpback, int32_t argEventId, int32_t argSourceId, void
 	break;
 	case SCE_AVPLAYER_TIMED_TEXT_DELIVERY:
  		{
-			memset(subs, '\0', 2048);
- 			SceAvPlayerFrameInfo* pTextEventData = (SceAvPlayerFrameInfo*)argEventData;
-			uint16_t size = pTextEventData->details.subs.textSize;
-			if ((char*)pTextEventData->pData) {
-				strncpy(subs, (char*)pTextEventData->pData, size);
+			if (subType == SUBTITLES_TIMED_TEXT) {
+				memset(subs, '\0', 2048);
+ 				SceAvPlayerFrameInfo* pTextEventData = (SceAvPlayerFrameInfo*)argEventData;
+				uint16_t size = pTextEventData->details.subs.textSize;
+				if ((char*)pTextEventData->pData) {
+					strncpy(subs, (char*)pTextEventData->pData, size);
+				}
+ 				printf("##Text to display: %s\n", subs);
 			}
- 			printf("##Text to display: %s\n", subs);
  		}
     break;
     case SCE_AVPLAYER_STATE_PLAY:
@@ -199,10 +206,10 @@ static SceInt32 loadAVPlayerThread()
 	playerInit.debugLevel = 3;
 
 	player = sceAvPlayerInit(&playerInit);
+	printf("File Name: %s", file);
 	if (R_FAILED(sceAvPlayerAddSource(player, file))) {
 		playerStatus = PLAYER_ERROR;
 	}
-	subStatus = SUBTITLES_NONE;
 	return sceKernelExitThread(0);
 }
 
@@ -239,6 +246,14 @@ static SceInt32 timerThread()
 
 static int drawSubtitles()
 {
+	if (subType == SUBTITLES_SRT) {
+		char *curSubs;
+		memset(subs, '\0', 2048);
+		curSubs = avGetSrt(&subReset);
+		if (curSubs)
+			strncpy(subs, curSubs, strlen(curSubs));
+ 		printf("##Text to display: %s\n", subs);
+	}
 	if (subs[0] != '\0') {
 		int fontSize = 1;
 		float linespace = FRAMEBUF_HEIGHT/200.0f;
@@ -282,8 +297,15 @@ static int drawLoading()
 
 int startPlayback(char *filename)
 {
+	subStatus = SUBTITLES_NONE;
 	SceUID main_thread_uid = sceKernelGetThreadId();
     sceKernelChangeThreadPriority(main_thread_uid, 70);
+	if(!avOpenSrt(filename)) {
+		subStatus = SUBTITLES_ENABLED;
+		subType = SUBTITLES_SRT;
+	}
+	else 
+		subType = SUBTITLES_TIMED_TEXT;
 	file = filename;
 	rad = 0.0f;
 	playerStatus = PLAYER_LOADING;
@@ -313,6 +335,7 @@ int startPlayback(char *filename)
         SceAvPlayerFrameInfo videoFrame;
         memset(&videoFrame, 0, sizeof(SceAvPlayerFrameInfo));
         while (sceAvPlayerIsActive(player)) {
+			playerTime = sceAvPlayerCurrentTime(player);
 			sceDisplayWaitVblankStart();
 			vita2d_start_drawing();
 			vita2d_clear_screen();
@@ -332,6 +355,7 @@ int startPlayback(char *filename)
     }
     sceAvPlayerClose(player);
 	printf("Freeing?\n\n");
+	avFreeSrt();
 	if (frameTexture != NULL)
         free(frameTexture);
 	sceKernelDeleteEventFlag(eventUid);

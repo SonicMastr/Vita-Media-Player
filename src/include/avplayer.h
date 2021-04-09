@@ -12,4 +12,6 @@ int avPlayerInit(void);
 int avPlayerTerm(void);
 int startPlayback(char *filename);
 
+extern uint64_t playerTime;
+
 #endif
