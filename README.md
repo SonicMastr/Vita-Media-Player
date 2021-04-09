@@ -3,6 +3,8 @@ An Open Source PSVita/TV MP4 player with 1080p playback and subtitle support
 
 1080i output supported on the PSTV natively and on the Vita with Sharpscale
 
+SRT subtitle support (Has to be the same name as the video file)
+
 MKVs do NOT work. If you want to preserve subtitles with MKVs I recommend using Handbrake to convert them to MP4 with Timed Text Subtitles. Direct FFMPEG will also work.
 
 
