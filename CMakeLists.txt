@@ -93,6 +93,6 @@ VDSuitePackage(${PROJECT_NAME}.vpk
     $<TARGET_FILE:${PROJECT_NAME}> eboot.bin
     vmp-param.sfo sce_sys/param.sfo
     resources/OpenSans-Bold.ttf OpenSans-Bold.ttf
-    modules/reAvPlayer.suprx modules/reAvPlayer.suprx
+    modules modules
     VMP_livearea sce_sys
 )
