@@ -1,15 +1,12 @@
+#include <utils.hpp>
 #include <gxm.h>
-#include <display.h>
-#include <kernel.h>
-#include <math.h>
-#include <utils.h>
-#include <string.h>
-#include <scetypes.h>
-#include <vita2d_sys.h>
 
-#define _USE_CDRAM 1
+#define ROUND_UP(x, a)	((((unsigned int)x)+((a)-1u))&(~((a)-1u)))
 
-void *memory = NULL;
+using namespace vmp::utils;
+
+std::vector <std::string> vid_extensions {".mp4"};
+std::vector <std::string> sub_extensions {".srt", ".ass"};
 
 void *avTextureAlloc(SceKernelMemBlockType type, unsigned int size, unsigned int alignment, unsigned int attribs, SceUID *uid)
 {
@@ -74,85 +71,84 @@ void avTextureFree(void *mem, SceUID memUid)
 		}
 	}
 
-	vita2d_wait_rendering_done();
-
 	ret = sceGxmUnmapMemory(mem);
 
 	ret = sceKernelFreeMemBlock(uid);
 }
 
-void* AllocateTexture(void* jumpback, uint32_t alignment, uint32_t size)
+void* mem::AllocateTexture(void* jumpback, uint32_t alignment, uint32_t size)
 {
-	SceUID textureMemoryUID;
+    SceUID textureMemoryUID;
 
-	return avTextureAlloc(
-#ifdef _USE_CDRAM
-						SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RWDATA,
-#else
-						SCE_KERNEL_MEMBLOCK_TYPE_USER_MAIN_PHYCONT_NC_RW,
-#endif
+	return avTextureAlloc( SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RWDATA,
 						size, alignment,
 						SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
 						&textureMemoryUID);
-};
+}
 
-void DeallocateTexture(void* jumpback, void* pMemory)
+void mem::DeallocateTexture(void* jumpback, void* pMemory)
 {
 	avTextureFree(pMemory, SCE_UID_INVALID_UID);
 };
 
-void* Allocate(void* jumpback, uint32_t alignment, uint32_t size)
+void* mem::Allocate(void* jumpback, uint32_t alignment, uint32_t size)
 {
 	return memalign(alignment, size);
 };
 
-void Deallocate(void* jumpback, void* pMemory)
+void mem::Deallocate(void* jumpback, void* pMemory)
 {
 	free(pMemory);
 };
 
-SceUID FileHandle;
-
-int OpenFile(void* jumpback, const char* argFilename)
+std::string file::getExtension(std::string filename)
 {
-	FileHandle = sceIoOpen(argFilename, SCE_O_RDONLY, 0);
-	return (int)FileHandle;
-}
+	int index = filename.find_last_of('.');
+	return filename.substr(index, filename.length() - index);
+};
 
-int CloseFile(void* jumpback)
+SceUInt32 file::getExtensionLength(std::string filename)
 {
-	return sceIoClose(FileHandle);
-}
+	return file::getExtension(filename).length();
+};
 
-int ReadOffsetFile(void* jumpback, uint8_t* argBuffer, uint64_t argPosition, uint32_t argLength)
+SceBool file::vid_is_valid(std::string filename)
 {
-	int64_t ActualRead = 0;
-
-		ActualRead = sceIoPread(FileHandle, argBuffer, argLength, argPosition);
-
-		if (ActualRead < 0)
-			return -1;
-
-		if (ActualRead == argLength)
-			return (int)ActualRead;
-		else
-			return 0;
-}
-
-uint64_t SizeFile(void* jumpback)
-{
-	int64_t filesize;
-
-	if(0>sceIoLseek(FileHandle, 0, SCE_SEEK_SET)) {
-		return 0;
+	std::string extension = file::getExtension(filename);
+	printf("Welp\n");
+	for (std::string& ext : vid_extensions)
+	{
+		if (!extension.compare(ext)) {
+			printf("Yes?\n");
+			return SCE_TRUE;
+		}
 	}
+	printf("No?\n");
+	return SCE_FALSE;
+};
 
-	filesize = sceIoLseek(FileHandle, 0, SCE_SEEK_END);
-	if (0>filesize) {
-		return 0;
+std::string *file::sub_convert(std::string *filename, int type)
+{
+	if (file::vid_is_valid(*filename))
+	{
+		printf("Kill me now %s\n", sub_extensions.at(type - 2).c_str());
+		SceUID file = sceIoOpen(filename->replace(filename->find_last_of('.'), sub_extensions.at(type - 2).length(), sub_extensions.at(type - 2)).c_str(), SCE_O_RDONLY, 0777);
+		if (file >= 0) {
+			sceIoClose(file);
+			return filename;
+		}
 	}
-	if(0>sceIoLseek(FileHandle, 0, SCE_SEEK_SET)) {
-		return 0;
+	return NULL;
+};
+
+SceBool file::sub_is_valid(std::string filename)
+{
+	transform(filename.begin(), filename.end(), filename.begin(), std::toupper);
+	std::string extension = file::getExtension(filename);
+	for (std::string& ext : sub_extensions)
+	{
+		if (!extension.compare(ext))
+			return SCE_TRUE;
 	}
-	return (uint64_t)filesize;
-}
+	return SCE_FALSE;
+};

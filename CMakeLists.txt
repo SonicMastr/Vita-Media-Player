@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.19)
 
 set(CMAKE_TOOLCHAIN_FILE "$ENV{SCE_PSP2_SDK_DIR}/host_tools/build/cmake/psp2-snc-toolchain.cmake")
 
-project(VitaMediaPlayer)
+project(VitaMediaPlayer LANGUAGES C CXX)
 
 include(VitaDevelopmentSuite)
 set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 17)
 
 add_compile_options(
   -Xdiag=0 -Xquit=2
@@ -44,7 +45,7 @@ add_resources(player_resources ${res_files})
 include_directories(
   ${VDSUITE_USER_INCLUDE_DIRECTORIES}
   ${VDSUITE_STANDARD_INCLUDE_DIRECTORIES}
-  src/include
+  include
 )
 
 link_directories(
@@ -54,19 +55,14 @@ link_directories(
 
 add_executable(${PROJECT_NAME}
   ${player_resources}
-  src/main.c
-  src/utils.c
-  src/dir.c
-  src/fs.c
-  src/texture.c
-  src/commonValues.c
-  src/menus/menuMain.c
-  src/menus/menuInfo.c
-  src/avplayer/avsubs.c
-  src/avplayer/avplayer.c
-  src/avplayer/avsound.c
-  src/avplayer/avplayerUtils.c
-  src/avplayer/overlay.c
+  src/main.cpp
+  src/subtitles.cpp
+  src/gfx.cpp
+  src/audio.cpp
+  src/player.cpp
+  src/utils.cpp
+  src/input.cpp
+  src/decoders/mp4dec.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -83,7 +79,9 @@ target_link_libraries(${PROJECT_NAME}
   SceIofilemgr_stub
   SceGxm_stub
   SceThreadmgr_stub
+  SceSysmem_stub 
   SceModulemgr_stub
+  SceDmacmgr_stub
 )
 
 VDSuiteCreateSfo(vmp-param.sfo param.yml)
