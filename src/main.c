@@ -23,7 +23,7 @@ int initVita2d()
 
 int main()
 {
-    sceKernelPowerTick(SCE_KERNEL_POWER_TICK_DEFAULT);
+    sceKernelPowerTick(SCE_KERNEL_POWER_TICK_DISABLE_AUTO_SUSPEND);
     sceIoMkdir("ux0:data/SubPlayer", 0777);
     sceKernelLoadStartModule("app0:modules/libvita2d_sys.suprx", 0, SCE_NULL, 0, SCE_NULL, SCE_NULL);
     vita2d_display_set_max_resolution(FRAMEBUF_WIDTH, FRAMEBUF_HEIGHT);
