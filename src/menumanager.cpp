@@ -7,6 +7,8 @@ using namespace vmp::gfx;
 Menu *MenuManager::loadMenu(void)
 {
     Menu *temp;
+    if (_currentMenu)
+        delete _currentMenu;
     switch (_currentMenuType)
     {
         case MENU_BROWSER:
