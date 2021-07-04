@@ -152,3 +152,15 @@ SceBool file::sub_is_valid(std::string filename)
 	}
 	return SCE_FALSE;
 };
+
+file::FileEntry::FileEntry(std::string filename, std::string filepath, SceDateTime creationTime, SceBool directory)
+{
+	_name = filename;
+	_path = filepath;
+	_creationTime = creationTime;
+	_directory = directory;
+}
+
+file::FileEntry::~FileEntry(void)
+{
+}

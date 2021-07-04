@@ -14,7 +14,12 @@ namespace vmp { namespace gfx {
             vita2d_texture *_play, *_pause, *_stop, *_backwards, *_forwards, *_subtitles, *_subtitles_disabled, *_video, *_music, *_folder, *_loading;
             SceInt32 _width, _height;
             vita2d_pgf *_default;
+            vita2d_pvf *_font;
             void loadTextures(void);
+
+            Graphics(SceInt32 width = 960, SceInt32 height = 544);
+            ~Graphics(void);
+
         public:
             /** Graphics Utils **/
             SceUInt32 abgr2rgba(SceUInt abgr);
@@ -45,8 +50,7 @@ namespace vmp { namespace gfx {
             void setResolution(SceInt32 width, SceInt32 height);
             void updateTexture(vita2d_texture *vita2dTex, const void* texData);
 
-            Graphics(SceInt32 width = 960, SceInt32 height = 544);
-            ~Graphics(void);
+            static Graphics *getInstance(void);
     };
 
 }};

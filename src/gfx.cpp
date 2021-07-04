@@ -183,6 +183,14 @@ void Graphics::updateTexture(vita2d_texture *vita2dTex, const void* texData)
     sceGxmTextureInitLinear(&vita2dTex->gxm_tex, texData, vita2d_texture_get_format(vita2dTex), vita2d_texture_get_width(vita2dTex), vita2d_texture_get_height(vita2dTex), 0);
 }
 
+Graphics *Graphics::getInstance(void)
+{
+    static Graphics *_instance; // This is dumb. Maybe just move this
+    if (!_instance)
+        _instance = new Graphics;
+    return _instance;
+}
+
 Graphics::Graphics(SceInt32 width, SceInt32 height)
 {
     _width = width;

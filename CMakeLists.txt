@@ -62,6 +62,8 @@ add_executable(${PROJECT_NAME}
   src/player.cpp
   src/utils.cpp
   src/input.cpp
+  src/menumanager.cpp
+  src/menus/browser.cpp
   src/decoders/mp4dec.cpp
 )
 
