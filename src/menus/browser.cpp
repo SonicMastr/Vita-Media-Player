@@ -11,8 +11,12 @@ static vita2d_pvf *font;
 
 void Browser::update(void)
 {
+    _input->poll();
     _gfx->beginFrame();
-    _gfx->drawText(font, 200, 200, RGBA8(0,255,0,255), "Ha. Gay");
+    if (_input->held(SCE_CTRL_CROSS))
+        _gfx->drawText(font, 200, 200, RGBA8(255,0,0,255), "You are no longer gay");
+    else
+        _gfx->drawText(font, 200, 200, RGBA8(0,255,0,255), "Ha. Gay");
     _gfx->endFrame();
 }
 
